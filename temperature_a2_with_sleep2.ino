@@ -16,9 +16,9 @@ float tempDevLast[ONE_WIRE_MAX_DEV]; //Previous temperature measurement
 long lastTemp; //The last measurement
 const int durationTemp = 5000;
 
-const char* ssid = "jasanet1_2";
-const char* password = "subaru72";
-const char* mqtt_server = "192.168.2.220";
+const char* ssid = "xxxx";
+const char* password = "xxxx";
+const char* mqtt_server = "192.168.xxx.xxx";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
