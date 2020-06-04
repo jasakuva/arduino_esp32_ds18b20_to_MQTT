@@ -6,6 +6,7 @@
 
 #define ONE_WIRE_BUS D3 //Pin to which is attached a temperature sensor
 #define ONE_WIRE_MAX_DEV 5 //The maximum number of devices
+#define SLEEP_TIME 120e6  //Deep sleep time micro secounds
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
@@ -16,9 +17,9 @@ float tempDevLast[ONE_WIRE_MAX_DEV]; //Previous temperature measurement
 long lastTemp; //The last measurement
 const int durationTemp = 5000;
 
-const char* ssid = "xxxx";
-const char* password = "xxxx";
-const char* mqtt_server = "192.168.xxx.xxx";
+const char* ssid = "jasanet1_2";
+const char* password = "subaru72";
+const char* mqtt_server = "192.168.2.220";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -33,9 +34,9 @@ int value = 0;
 //Setting the temperature sensor
 void SetupDS18B20(){
   
-  delay(2000);
+  delay(1000);
   DS18B20.begin();
-  delay(2000);
+  delay(1000);
   Serial.print("Parasite power is: "); 
   if( DS18B20.isParasitePowerMode() ){ 
     Serial.println("ON");
@@ -125,7 +126,7 @@ void reconnect() {
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
+      Serial.println(" try again in 2 seconds");
       // Wait 2 seconds before retrying
       delay(2000);
     }
@@ -155,11 +156,18 @@ void loop(void)
 
  Temperature = getTemperature ( 0 );
  
+  if (Temperature < -40) {
+     snprintf (msg, 75, "{\"ERROR: temperature\":%.2f}", Temperature);
+     Serial.print("message:");
+     Serial.println(msg);
+     ESP.deepSleep(SLEEP_TIME);
+  }
+  
   if (!client.connected()) {
     reconnect();
   }
   //client.loop();
-  delay(2000);
+  delay(200);
   long rssi = WiFi.RSSI();
   Serial.print("RSSI:");
   Serial.println(rssi);
@@ -170,9 +178,9 @@ void loop(void)
   Serial.print("message:");
   Serial.println(msg);
 
-  delay(3000);
+  delay(2000);
   
-  ESP.deepSleep(120e6);
+  ESP.deepSleep(SLEEP_TIME);
   
   
 } 
